@@ -5,10 +5,15 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  Modal,
+  Alert,
+  Share,
 } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
+import * as Clipboard from "expo-clipboard";
+import { router } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -33,6 +38,29 @@ export default function BalanceCard({
 }: BalanceCardProps) {
   const colorScheme = useColorScheme();
   const [showBalance, setShowBalance] = useState(true);
+  const [showActionsModal, setShowActionsModal] = useState(false);
+
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(formatRWF(totalBalance));
+    setShowActionsModal(false);
+    Alert.alert("Copied!", "Balance copied to clipboard");
+  };
+
+  const shareBalance = async () => {
+    try {
+      await Share.share({
+        message: `My total balance is ${formatRWF(totalBalance)}`,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+    setShowActionsModal(false);
+  };
+
+  const quickAddTransaction = () => {
+    setShowActionsModal(false);
+    router.push("/add-transaction?type=expense");
+  };
 
   return (
     <View style={styles.container}>
@@ -51,7 +79,10 @@ export default function BalanceCard({
           </TouchableOpacity>
         </View>
         <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.moreButton}>
+          <TouchableOpacity
+            style={styles.moreButton}
+            onPress={() => setShowActionsModal(true)}
+          >
             <FontAwesome name="ellipsis-h" size={20} color="white" />
           </TouchableOpacity>
         </View>
@@ -98,6 +129,80 @@ export default function BalanceCard({
           </View>
         </View>
       </View>
+
+      {/* Quick Actions Modal */}
+      <Modal
+        visible={showActionsModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowActionsModal(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowActionsModal(false)}
+        >
+          <View style={styles.modalContent}>
+            <View style={styles.modalHandle} />
+            <Text style={styles.modalTitle}>Quick Actions</Text>
+
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={copyToClipboard}
+            >
+              <FontAwesome
+                name="copy"
+                size={20}
+                color={Colors.light.tint}
+                style={styles.actionIcon}
+              />
+              <Text style={styles.actionText}>Copy Balance</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={shareBalance}
+            >
+              <FontAwesome
+                name="share-alt"
+                size={20}
+                color={Colors.light.tint}
+                style={styles.actionIcon}
+              />
+              <Text style={styles.actionText}>Share Balance</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={quickAddTransaction}
+            >
+              <FontAwesome
+                name="plus-circle"
+                size={20}
+                color={Colors.light.tint}
+                style={styles.actionIcon}
+              />
+              <Text style={styles.actionText}>Add Transaction</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => {
+                setShowActionsModal(false);
+                Alert.alert("Export Data", "Export feature coming soon!");
+              }}
+            >
+              <FontAwesome
+                name="download"
+                size={20}
+                color={Colors.light.tint}
+                style={styles.actionIcon}
+              />
+              <Text style={styles.actionText}>Export Data</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
@@ -178,5 +283,51 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 20,
     fontWeight: "600",
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    width: "100%",
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 48,
+  },
+  modalHandle: {
+    width: 48,
+    height: 4,
+    backgroundColor: "#E0E0E0",
+    borderRadius: 2,
+    alignSelf: "center",
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#000",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  actionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 18,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F0F0F0",
+  },
+  actionIcon: {
+    marginRight: 16,
+  },
+  actionText: {
+    fontSize: 16,
+    color: "#000",
+    fontWeight: "500",
   },
 });
