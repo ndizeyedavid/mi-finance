@@ -1,78 +1,76 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Vibration,
+  Alert,
 } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Colors from "@/constants/Colors";
 import { StatusBar } from "expo-status-bar";
 import { router } from "expo-router";
+import { FontAwesome6 } from "@expo/vector-icons";
+
+// Default passcode (user will set this in profile later, hardcoded for now)
+const SAVED_PASSCODE = "1234";
 
 const PASSCODE_LENGTH = 4;
 
-export default function SetPasscodeScreen() {
+export default function PasscodeScreen() {
   const [passcode, setPasscode] = useState("");
-  const [confirmPasscode, setConfirmPasscode] = useState("");
-  const [step, setStep] = useState<"enter" | "confirm">("enter");
   const [error, setError] = useState(false);
+  const [attempts, setAttempts] = useState(0);
 
   const handleKeyPress = (key: string) => {
-    const currentPasscode = step === "enter" ? passcode : confirmPasscode;
-    const setCurrentPasscode =
-      step === "enter" ? setPasscode : setConfirmPasscode;
+    if (passcode.length >= PASSCODE_LENGTH) return;
 
-    if (currentPasscode.length >= PASSCODE_LENGTH) return;
-
-    const newPasscode = currentPasscode + key;
-    setCurrentPasscode(newPasscode);
+    const newPasscode = passcode + key;
+    setPasscode(newPasscode);
     setError(false);
   };
 
   const handleDelete = () => {
-    const currentPasscode = step === "enter" ? passcode : confirmPasscode;
-    const setCurrentPasscode =
-      step === "enter" ? setPasscode : setConfirmPasscode;
-
-    if (currentPasscode.length > 0) {
-      setCurrentPasscode(currentPasscode.slice(0, -1));
+    if (passcode.length > 0) {
+      setPasscode(passcode.slice(0, -1));
       setError(false);
     }
   };
 
   useEffect(() => {
-    if (step === "enter" && passcode.length === PASSCODE_LENGTH) {
-      // Proceed to confirm step
-      setTimeout(() => {
-        setStep("confirm");
-      }, 300);
-    } else if (
-      step === "confirm" &&
-      confirmPasscode.length === PASSCODE_LENGTH
-    ) {
-      // Check if passcodes match
-      if (passcode === confirmPasscode) {
-        // Success! Navigate back
-        setTimeout(() => {
-          router.back();
-        }, 300);
+    if (passcode.length === PASSCODE_LENGTH) {
+      if (passcode === SAVED_PASSCODE) {
+        // Success! Navigate to home
+        router.replace("/(tabs)");
+        setPasscode("");
+        setAttempts(0);
+        setError(false);
       } else {
-        // Mismatch!
+        // Incorrect passcode
         setError(true);
         Vibration.vibrate(500);
+
+        const newAttempts = attempts + 1;
+        setAttempts(newAttempts);
+
         setTimeout(() => {
-          setConfirmPasscode("");
-          setError(false);
+          setPasscode("");
         }, 300);
+
+        if (newAttempts >= 3) {
+          Alert.alert(
+            "Too Many Attempts",
+            "Please try again in a few seconds.",
+            [{ text: "OK" }],
+          );
+          setAttempts(0);
+        }
       }
     }
-  }, [passcode, confirmPasscode, step]);
+  }, [passcode]);
 
   const renderDigitDots = () => {
-    const currentPasscode = step === "enter" ? passcode : confirmPasscode;
-
     return Array(PASSCODE_LENGTH)
       .fill(0)
       .map((_, index) => (
@@ -80,9 +78,7 @@ export default function SetPasscodeScreen() {
           key={index}
           style={[
             styles.digitDot,
-            index < currentPasscode.length
-              ? styles.filledDot
-              : styles.emptyDot,
+            index < passcode.length ? styles.filledDot : styles.emptyDot,
             error && styles.errorDot,
           ]}
         />
@@ -90,17 +86,27 @@ export default function SetPasscodeScreen() {
   };
 
   const renderKeypad = () => {
-    const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "empty", "0", "delete"];
+    const keys = [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "empty",
+      "0",
+      "delete",
+    ];
 
     return (
       <View style={styles.keypadContainer}>
         {keys.map((key) => (
           <TouchableOpacity
             key={key}
-            style={[
-              styles.keypadButton,
-              key === "empty" && styles.emptyKey,
-            ]}
+            style={[styles.keypadButton, key === "empty" && styles.emptyKey]}
             disabled={key === "empty"}
             onPress={() => {
               if (key === "delete") {
@@ -112,7 +118,7 @@ export default function SetPasscodeScreen() {
             activeOpacity={key !== "empty" ? 0.7 : 1}
           >
             {key === "delete" ? (
-              <FontAwesome name="backspace" size={28} color="#333" />
+              <FontAwesome6 name="delete-left" size={28} color="#333" />
             ) : key !== "empty" ? (
               <Text style={styles.keypadText}>{key}</Text>
             ) : null}
@@ -124,28 +130,16 @@ export default function SetPasscodeScreen() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => router.back()}
-      >
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <FontAwesome name="chevron-left" size={20} color="#333" />
       </TouchableOpacity>
 
-      <Text style={styles.title}>
-        {step === "enter" ? "Set Passcode" : "Confirm Passcode"}
-      </Text>
-      <Text style={styles.subtitle}>
-        {step === "enter"
-          ? "Enter a 4-digit passcode to protect your app"
-          : "Re-enter your passcode to confirm"}
-      </Text>
+      <Text style={styles.title}>Enter Passcode</Text>
 
       <View style={styles.digitContainer}>{renderDigitDots()}</View>
 
       {error && (
-        <Text style={styles.errorText}>
-          Passcodes don't match. Try again.
-        </Text>
+        <Text style={styles.errorText}>Incorrect passcode. Try again.</Text>
       )}
 
       <View style={styles.keypadWrapper}>{renderKeypad()}</View>
@@ -176,14 +170,8 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#333",
     textAlign: "center",
-    marginBottom: 12,
-    marginTop: 40,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#888",
-    textAlign: "center",
     marginBottom: 48,
+    marginTop: 40,
   },
   digitContainer: {
     flexDirection: "row",
