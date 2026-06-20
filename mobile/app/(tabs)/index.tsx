@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
@@ -12,8 +12,10 @@ import { Svg, Path } from "react-native-svg";
 import Colors from "@/constants/Colors";
 import BalanceCard from "@/components/BalanceCard";
 import TransactionItem from "@/components/TransactionItem";
-import SendAgainAvatar from "@/components/SendAgainAvatar";
 import CustomSafeAreaView from "@/components/CustomSafeAreaView";
+import QuickAddButtons from "@/components/QuickAddButtons";
+import CategoryBreakdown from "@/components/CategoryBreakdown";
+import ReusableCalendarModal from "@/components/ReusableCalendarModal";
 import FreelanceIcon from "@/assets/images/icons/icon_illustrative_freelance.svg";
 import SalaryIcon from "@/assets/images/icons/icon_illustrative_salary.svg";
 import ShoppingIcon from "@/assets/images/icons/icon_illustrative_shopping.svg";
@@ -60,15 +62,25 @@ const mockTransactions = [
   },
 ];
 
-const mockSendAgain = [
-  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
-  "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=100&h=100&fit=crop&crop=face",
-  "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&h=100&fit=crop&crop=face",
-  "https://images.unsplash.com/photo-1485206412256-70125b947694?w=100&h=100&fit=crop&crop=face",
-];
-
 export default function HomeScreen() {
+  const [calendarVisible, setCalendarVisible] = useState(false);
+
+  const handleOpenCalendar = () => {
+    setCalendarVisible(true);
+  };
+
+  const handleCloseCalendar = () => {
+    setCalendarVisible(false);
+  };
+
+  const handleDateSelect = (date: Date) => {
+    console.log("Selected date:", date);
+  };
+
+  const handleDateRangeSelect = (startDate: Date, endDate: Date) => {
+    console.log("Selected range:", startDate, endDate);
+  };
+
   return (
     <CustomSafeAreaView edges={["bottom", "left", "right"]}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -103,6 +115,8 @@ export default function HomeScreen() {
           expenses={284000}
         />
 
+        <QuickAddButtons />
+
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Transactions History</Text>
           <TouchableOpacity>
@@ -116,24 +130,15 @@ export default function HomeScreen() {
           ))}
         </View>
 
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Send Again</Text>
-          <TouchableOpacity>
-            <Text style={styles.seeAllButton}>See all</Text>
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView
-          horizontal
-          style={styles.sendAgainContainer}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.sendAgainContent}
-        >
-          {mockSendAgain.map((url, index) => (
-            <SendAgainAvatar key={index} imageUrl={url} />
-          ))}
-        </ScrollView>
+        <CategoryBreakdown onOpenCalendar={handleOpenCalendar} />
       </ScrollView>
+
+      <ReusableCalendarModal
+        visible={calendarVisible}
+        onClose={handleCloseCalendar}
+        onDateSelect={handleDateSelect}
+        onDateRangeSelect={handleDateRangeSelect}
+      />
     </CustomSafeAreaView>
   );
 }
@@ -179,7 +184,7 @@ const styles = StyleSheet.create({
   notificationBadge: {
     position: "absolute",
     top: 10,
-    right: 13,
+    right: 10,
     width: 10,
     height: 10,
     borderRadius: 5,
@@ -205,13 +210,6 @@ const styles = StyleSheet.create({
   },
   transactionsContainer: {
     gap: 8,
-    paddingHorizontal: 24,
-  },
-  sendAgainContainer: {
-    marginBottom: 100,
-  },
-  sendAgainContent: {
-    gap: 16,
     paddingHorizontal: 24,
   },
 });

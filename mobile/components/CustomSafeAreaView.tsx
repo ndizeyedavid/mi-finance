@@ -18,9 +18,9 @@ export default function CustomSafeAreaView({
       {Platform.OS === "android" && edges.includes("top") && (
         <View style={styles.androidStatusBar} />
       )}
-      <SafeAreaView style={styles.safeArea} edges={edges}>
-        {children}
-      </SafeAreaView>
+      {/* <SafeAreaView style={styles.safeArea} edges={edges}> */}
+      {children}
+      {/* </SafeAreaView> */}
     </View>
   );
 }
