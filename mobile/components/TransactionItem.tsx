@@ -99,5 +99,6 @@ const styles = StyleSheet.create({
   amount: {
     fontSize: 18,
     fontWeight: "700",
+    color: "#fff",
   },
 });

@@ -5,13 +5,17 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
-  SafeAreaView,
+  Dimensions,
 } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Svg, Path } from "react-native-svg";
 import Colors from "@/constants/Colors";
 import BalanceCard from "@/components/BalanceCard";
 import TransactionItem from "@/components/TransactionItem";
 import SendAgainAvatar from "@/components/SendAgainAvatar";
+import CustomSafeAreaView from "@/components/CustomSafeAreaView";
+
+const { width } = Dimensions.get("window");
 
 const mockTransactions = [
   {
@@ -62,19 +66,32 @@ const mockSendAgain = [
 
 export default function HomeScreen() {
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <CustomSafeAreaView edges={["bottom", "left", "right"]}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Good afternoon,</Text>
-            <Text style={styles.userName}>Enjelin Morgeana</Text>
+        <View style={styles.topContainer}>
+          <View style={styles.header}>
+            <View>
+              <Text style={styles.greeting}>Good afternoon,</Text>
+              <Text style={styles.userName}>David Ndizeye</Text>
+            </View>
+            <TouchableOpacity style={styles.notificationButton}>
+              <FontAwesome name="bell-o" size={20} color="white" />
+              <View style={styles.notificationBadge} />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.notificationButton}>
-            <FontAwesome name="bell" size={20} color="white" />
-            <View style={styles.notificationBadge} />
-          </TouchableOpacity>
         </View>
 
+        <Svg
+          height={60}
+          width={width}
+          viewBox={`0 0 ${width} 60`}
+          style={styles.curveSvg}
+        >
+          <Path
+            d={`M 0 0 Q ${width / 2} 60 ${width} 0 L ${width} 0 L 0 0 Z`}
+            fill={Colors.light.tint}
+          />
+        </Svg>
         <BalanceCard
           totalBalance={2548000}
           income={1840000}
@@ -112,19 +129,23 @@ export default function HomeScreen() {
           ))}
         </ScrollView>
       </ScrollView>
-    </SafeAreaView>
+    </CustomSafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
   container: {
     flex: 1,
+  },
+  topContainer: {
+    backgroundColor: Colors.light.tint,
     paddingHorizontal: 24,
-    paddingTop: 16,
+    paddingTop: 70,
+    paddingBottom: 110,
+  },
+  curveSvg: {
+    marginBottom: 20,
+    zIndex: 10,
   },
   header: {
     flexDirection: "row",
@@ -134,31 +155,26 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 16,
-    color: "#888",
+    color: "rgba(255,255,255,0.8)",
     marginBottom: 4,
   },
   userName: {
     fontSize: 22,
     fontWeight: "700",
-    color: "#000",
+    color: "white",
   },
   notificationButton: {
     width: 48,
     height: 48,
     borderRadius: 16,
-    backgroundColor: Colors.light.tint,
+    backgroundColor: "rgba(255,255,255,0.2)",
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: Colors.light.tint,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
   },
   notificationBadge: {
     position: "absolute",
     top: 10,
-    right: 10,
+    right: 13,
     width: 10,
     height: 10,
     borderRadius: 5,
@@ -170,6 +186,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 32,
     marginBottom: 16,
+    paddingHorizontal: 24,
   },
   sectionTitle: {
     fontSize: 18,
@@ -183,12 +200,13 @@ const styles = StyleSheet.create({
   },
   transactionsContainer: {
     gap: 8,
+    paddingHorizontal: 24,
   },
   sendAgainContainer: {
     marginBottom: 100,
   },
   sendAgainContent: {
     gap: 16,
-    paddingRight: 24,
+    paddingHorizontal: 24,
   },
 });

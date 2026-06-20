@@ -1,8 +1,16 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Colors from "@/constants/Colors";
-import { useColorScheme } from "./useColorScheme";
+import { useColorScheme } from "@/components/useColorScheme";
+
+const { width } = Dimensions.get("window");
 
 function formatRWF(amount: number): string {
   return new Intl.NumberFormat("rw-RW", {
@@ -28,36 +36,55 @@ export default function BalanceCard({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Total Balance</Text>
-        <View style={styles.headerRight}>
+        <View style={styles.headerLeft}>
+          <Text style={styles.headerText}>Total Balance</Text>
           <FontAwesome name="angle-up" size={16} color="white" />
+        </View>
+        <View style={styles.headerRight}>
           <TouchableOpacity style={styles.moreButton}>
             <FontAwesome name="ellipsis-h" size={20} color="white" />
           </TouchableOpacity>
         </View>
       </View>
-      <Text style={styles.balanceText}>{formatRWF(totalBalance)}</Text>
+      <Text
+        style={styles.balanceText}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.8}
+      >
+        {formatRWF(totalBalance)}
+      </Text>
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
           <View style={styles.statIconContainer}>
-            <FontAwesome
-              name="arrow-down"
-              size={14}
-              color={Colors.light.tint}
-            />
+            <FontAwesome name="arrow-down" size={14} color={"white"} />
           </View>
-          <View>
+          <View style={styles.statTextContainer}>
             <Text style={styles.statLabel}>Income</Text>
-            <Text style={styles.statAmount}>{formatRWF(income)}</Text>
+            <Text
+              style={styles.statAmount}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
+            >
+              {formatRWF(income)}
+            </Text>
           </View>
         </View>
         <View style={styles.statItem}>
           <View style={styles.statIconContainer}>
-            <FontAwesome name="arrow-up" size={14} color={Colors.light.tint} />
+            <FontAwesome name="arrow-up" size={14} color={"white"} />
           </View>
-          <View>
+          <View style={styles.statTextContainer}>
             <Text style={styles.statLabel}>Expenses</Text>
-            <Text style={styles.statAmount}>{formatRWF(expenses)}</Text>
+            <Text
+              style={styles.statAmount}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
+            >
+              {formatRWF(expenses)}
+            </Text>
           </View>
         </View>
       </View>
@@ -67,14 +94,17 @@ export default function BalanceCard({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.light.tint,
+    backgroundColor: Colors.dark.tint,
     borderRadius: 24,
     padding: 24,
-    shadowColor: Colors.light.tint,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 30,
-    elevation: 8,
+    width: width - 48,
+    marginBottom: 10,
+    position: "absolute",
+    top: 150,
+    left: "50%",
+    transform: [{ translateX: "-50%" }],
+    zIndex: 100,
+    boxShadow: "0 5px 14px rgba(27, 92, 88, 0.7)",
   },
   header: {
     flexDirection: "row",
@@ -92,6 +122,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
   },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
   moreButton: {
     padding: 4,
   },
@@ -104,19 +139,25 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    gap: 20,
   },
   statItem: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
+    flex: 1,
+  },
+  statTextContainer: {
+    flex: 1,
   },
   statIconContainer: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "rgba(255,255,255,0.2)",
+    backgroundColor: "rgba(255,255,255,0.3)",
     justifyContent: "center",
     alignItems: "center",
+    flexShrink: 0,
   },
   statLabel: {
     color: "rgba(255,255,255,0.8)",
