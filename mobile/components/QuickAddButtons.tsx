@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Colors from "@/constants/Colors";
+import { Link } from "expo-router";
 
 interface QuickAddButtonsProps {
   onAddIncome?: () => void;
@@ -9,25 +10,31 @@ interface QuickAddButtonsProps {
 }
 
 export default function QuickAddButtons({
-  onAddIncome = () => console.log("Add Income pressed"),
-  onAddExpense = () => console.log("Add Expense pressed"),
+  onAddIncome,
+  onAddExpense,
 }: QuickAddButtonsProps) {
   return (
     <View style={styles.container}>
-      <TouchableOpacity
+      <Link
+        href="/add-transaction?type=income"
         style={[styles.button, styles.incomeButton]}
-        onPress={onAddIncome}
+        asChild
       >
-        <FontAwesome name="plus-circle" size={24} color="white" />
-        <Text style={styles.buttonText}>Add Income</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
+        <TouchableOpacity>
+          <FontAwesome name="plus-circle" size={24} color="white" />
+          <Text style={styles.buttonText}>Add Income</Text>
+        </TouchableOpacity>
+      </Link>
+      <Link
+        href="/add-transaction?type=expense"
         style={[styles.button, styles.expenseButton]}
-        onPress={onAddExpense}
+        asChild
       >
-        <FontAwesome name="minus-circle" size={24} color="white" />
-        <Text style={styles.buttonText}>Add Expense</Text>
-      </TouchableOpacity>
+        <TouchableOpacity>
+          <FontAwesome name="minus-circle" size={24} color="white" />
+          <Text style={styles.buttonText}>Add Expense</Text>
+        </TouchableOpacity>
+      </Link>
     </View>
   );
 }
