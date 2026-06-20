@@ -20,6 +20,7 @@ import ShoppingIcon from "@/assets/images/icons/icon_illustrative_shopping.svg";
 import TransportIcon from "@/assets/images/icons/icon_illustrative_transport.svg";
 import FreelanceIcon from "@/assets/images/icons/icon_illustrative_freelance.svg";
 import SalaryIcon from "@/assets/images/icons/icon_illustrative_salary.svg";
+import { BlurView } from "expo-blur";
 
 const { width } = Dimensions.get("window");
 
@@ -99,6 +100,16 @@ export default function StatsScreen() {
     timePeriodData[selectedPeriod as keyof typeof timePeriodData];
   const chartValues = currentChartData.data;
   const selectedValue = chartValues[selectedIndex];
+  const maxValue = Math.max(...chartValues);
+  const minValue = Math.min(...chartValues);
+  const chartHeight = 350;
+  const paddingVertical = 40;
+  const drawingHeight = chartHeight - paddingVertical * 2;
+
+  // Calculate normalized Y position (inverted because chart goes bottom to top)
+  const valueRange = maxValue - minValue || 1;
+  const normalizedValue = (selectedValue - minValue) / valueRange;
+  const tooltipY = paddingVertical + (1 - normalizedValue) * drawingHeight - 60;
 
   const chartConfig = {
     backgroundColor: "#ffffff",
@@ -132,7 +143,8 @@ export default function StatsScreen() {
   };
 
   return (
-    <CustomSafeAreaView style={{ flex: 1 }}>
+    <CustomSafeAreaView edges={["bottom", "left", "right"]}>
+      <BlurView intensity={50} tint="light" style={styles.blurContainer} />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton}>
@@ -165,8 +177,9 @@ export default function StatsScreen() {
             style={[
               styles.chartValueTag,
               {
+                top: tooltipY,
                 left:
-                  24 +
+                  0 +
                   (selectedIndex * (width - 48)) /
                     (currentChartData.labels.length - 1),
               },
@@ -175,7 +188,7 @@ export default function StatsScreen() {
             <Text style={styles.chartValue}>
               ${selectedValue.toLocaleString()}
             </Text>
-            <View style={styles.tagArrow} />
+            {/* <View style={styles.tagArrow} /> */}
           </View>
           <LineChart
             data={{
@@ -229,16 +242,20 @@ export default function StatsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
+  blurContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 50,
+    zIndex: 100,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 24,
-    paddingTop: 20,
+    paddingTop: 50,
     marginBottom: 24,
   },
   backButton: {
@@ -248,6 +265,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
     justifyContent: "center",
     alignItems: "center",
+    opacity: 0,
   },
   headerTitle: {
     fontSize: 18,
@@ -290,6 +308,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#438883",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
