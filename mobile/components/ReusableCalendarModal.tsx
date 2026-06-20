@@ -39,6 +39,16 @@ export default function ReusableCalendarModal({
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [mode, setMode] = useState<"single" | "range">("single");
 
+  // Reset state when modal opens
+  React.useEffect(() => {
+    if (visible) {
+      setCurrentDate(new Date());
+      setSelectedDate(null);
+      setStartDate(null);
+      setEndDate(null);
+    }
+  }, [visible]);
+
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const daysInMonth = getDaysInMonth(year, month);

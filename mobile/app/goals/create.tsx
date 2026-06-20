@@ -15,17 +15,53 @@ import { Stack, router } from "expo-router";
 import Colors from "@/constants/Colors";
 import CustomSafeAreaView from "@/components/CustomSafeAreaView";
 import CustomInput from "@/components/CustomInput";
+import ReusableCalendarModal from "@/components/ReusableCalendarModal";
+// Import SVG icons
+import BusinessIcon from "@/assets/images/icons/icon_illustrative_business.svg";
+import SavingIcon from "@/assets/images/icons/icon_illustrative_saving.svg";
+import GiftIcon from "@/assets/images/icons/icon_illustrative_gift.svg";
+import VacationIcon from "@/assets/images/icons/icon_illustrative_vacation.svg";
+import MealIcon from "@/assets/images/icons/icon_illustrative_meal.svg";
+import GroceryIcon from "@/assets/images/icons/icon_illustrative_grocery.svg";
+import HealthIcon from "@/assets/images/icons/icon_illustrative_health.svg";
+import InvestmentIcon from "@/assets/images/icons/icon_illustrative_investment.svg";
+import RentIcon from "@/assets/images/icons/icon_illustrative_rent.svg";
+import SalaryIcon from "@/assets/images/icons/icon_illustrative_salary.svg";
+import FreelanceIcon from "@/assets/images/icons/icon_illustrative_freelance.svg";
+import PassiveIncomeIcon from "@/assets/images/icons/icon_illustrative_passiveincome.svg";
+import ShoppingIcon from "@/assets/images/icons/icon_illustrative_shopping.svg";
+import FunIcon from "@/assets/images/icons/icon_illustrative_fun.svg";
 
 const { width } = Dimensions.get("window");
 
-type Category = "business" | "saving" | "gift" | "vacation" | "meal";
+type Category =
+  | "business"
+  | "saving"
+  | "gift"
+  | "vacation"
+  | "meal"
+  | "grocery"
+  | "health"
+  | "investment"
+  | "rent"
+  | "salary"
+  | "freelance"
+  | "passiveincome"
+  | "shopping"
+  | "fun";
 
 const categories = [
-  { id: "business", label: "Business", icon: "briefcase" },
-  { id: "saving", label: "Saving", icon: "piggy-bank" },
-  { id: "gift", label: "Gift", icon: "gift" },
-  { id: "vacation", label: "Vacation", icon: "plane" },
-  { id: "meal", label: "Food", icon: "cutlery" },
+  { id: "business", label: "Business", icon: BusinessIcon },
+  { id: "saving", label: "Saving", icon: SavingIcon },
+  { id: "gift", label: "Gift", icon: GiftIcon },
+  { id: "vacation", label: "Vacation", icon: VacationIcon },
+  { id: "meal", label: "Snacks", icon: MealIcon },
+  { id: "grocery", label: "Grocery", icon: GroceryIcon },
+  { id: "health", label: "Health", icon: HealthIcon },
+  { id: "investment", label: "Investment", icon: InvestmentIcon },
+  { id: "rent", label: "Rent", icon: RentIcon },
+  { id: "shopping", label: "Shopping", icon: ShoppingIcon },
+  { id: "fun", label: "Fun", icon: FunIcon },
 ];
 
 function formatRWFInput(text: string): string {
@@ -38,6 +74,13 @@ function parseRWF(text: string): number {
   return parseInt(text.replace(/,/g, ""), 10) || 0;
 }
 
+function formatDate(date: Date): string {
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 export default function NewGoalScreen() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -47,6 +90,7 @@ export default function NewGoalScreen() {
     null,
   );
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [showCalendar, setShowCalendar] = useState(false);
 
   const validate = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -79,6 +123,10 @@ export default function NewGoalScreen() {
       });
       router.back();
     }
+  };
+
+  const handleDateSelect = (date: Date) => {
+    setDeadline(formatDate(date));
   };
 
   return (
@@ -133,38 +181,41 @@ export default function NewGoalScreen() {
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Category</Text>
                 <View style={styles.categoriesContainer}>
-                  {categories.map((category) => (
-                    <TouchableOpacity
-                      key={category.id}
-                      style={[
-                        styles.categoryButton,
-                        selectedCategory === category.id &&
-                          styles.selectedCategory,
-                      ]}
-                      onPress={() =>
-                        setSelectedCategory(category.id as Category)
-                      }
-                    >
-                      <FontAwesome
-                        name={category.icon as any}
-                        size={20}
-                        color={
-                          selectedCategory === category.id
-                            ? "white"
-                            : Colors.light.tint
-                        }
-                      />
-                      <Text
+                  {categories.map((category) => {
+                    const CategoryIcon = category.icon;
+                    return (
+                      <TouchableOpacity
+                        key={category.id}
                         style={[
-                          styles.categoryLabel,
+                          styles.categoryButton,
                           selectedCategory === category.id &&
-                            styles.selectedCategoryLabel,
+                            styles.selectedCategory,
                         ]}
+                        onPress={() =>
+                          setSelectedCategory(category.id as Category)
+                        }
                       >
-                        {category.label}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+                        <CategoryIcon
+                          width={32}
+                          height={32}
+                          color={
+                            selectedCategory === category.id
+                              ? "white"
+                              : Colors.light.tint
+                          }
+                        />
+                        <Text
+                          style={[
+                            styles.categoryLabel,
+                            selectedCategory === category.id &&
+                              styles.selectedCategoryLabel,
+                          ]}
+                        >
+                          {category.label}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
                 </View>
                 {errors.category && (
                   <Text style={styles.errorText}>{errors.category}</Text>
@@ -181,12 +232,7 @@ export default function NewGoalScreen() {
                 rightComponent={<Text style={styles.currencyLabel}>RWF</Text>}
               />
 
-              <TouchableOpacity
-                style={styles.dateInputContainer}
-                onPress={() => {
-                  // TODO: Show custom calendar modal here
-                }}
-              >
+              <View style={styles.dateInputContainer}>
                 <CustomInput
                   label="Deadline (Optional)"
                   value={deadline}
@@ -194,10 +240,22 @@ export default function NewGoalScreen() {
                   placeholder="Select a date"
                   editable={false}
                   rightComponent={
-                    <FontAwesome name="calendar" size={20} color="#999" />
+                    <TouchableOpacity
+                      style={styles.calendarIconButton}
+                      activeOpacity={0.7}
+                      onPress={() => setShowCalendar(true)}
+                    >
+                      <FontAwesome name="calendar" size={20} color="#999" />
+                    </TouchableOpacity>
                   }
                 />
-              </TouchableOpacity>
+                {/* Overlay to make the whole field pressable */}
+                <TouchableOpacity
+                  style={styles.dateInputOverlay}
+                  activeOpacity={0.7}
+                  onPress={() => setShowCalendar(true)}
+                />
+              </View>
 
               <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
                 <Text style={styles.saveButtonText}>Create Goal</Text>
@@ -206,6 +264,13 @@ export default function NewGoalScreen() {
           </ScrollView>
         </KeyboardAvoidingView>
       </CustomSafeAreaView>
+
+      {/* Calendar Modal */}
+      <ReusableCalendarModal
+        visible={showCalendar}
+        onClose={() => setShowCalendar(false)}
+        onDateSelect={handleDateSelect}
+      />
     </>
   );
 }
@@ -306,6 +371,18 @@ const styles = StyleSheet.create({
   },
   dateInputContainer: {
     marginBottom: 24,
+    position: "relative",
+  },
+  calendarIconButton: {
+    padding: 4,
+  },
+  dateInputOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "transparent",
   },
   currencyLabel: {
     fontSize: 14,
