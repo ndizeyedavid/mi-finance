@@ -13,6 +13,7 @@ import Colors from "@/constants/Colors";
 import CustomSafeAreaView from "@/components/CustomSafeAreaView";
 import GoalCard from "@/components/GoalCard";
 import { BlurView } from "expo-blur";
+import { Link } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -93,9 +94,15 @@ export default function GoalsScreen() {
           {/* Action Buttons Row */}
           <View style={styles.actionButtonsRow}>
             <TouchableOpacity style={styles.actionButton}>
-              <View style={styles.actionIconContainer}>
-                <FontAwesome name="plus" size={24} color={Colors.light.tint} />
-              </View>
+              <Link href="/goals/create" asChild>
+                <TouchableOpacity style={styles.actionIconContainer}>
+                  <FontAwesome
+                    name="plus"
+                    size={24}
+                    color={Colors.light.tint}
+                  />
+                </TouchableOpacity>
+              </Link>
               <Text style={styles.actionButtonText}>Create</Text>
             </TouchableOpacity>
 
