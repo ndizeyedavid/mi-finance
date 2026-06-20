@@ -20,16 +20,22 @@ import FreelanceIcon from "@/assets/images/icons/icon_illustrative_freelance.svg
 import SalaryIcon from "@/assets/images/icons/icon_illustrative_salary.svg";
 import ShoppingIcon from "@/assets/images/icons/icon_illustrative_shopping.svg";
 import MealIcon from "@/assets/images/icons/icon_illustrative_meal.svg";
+import GroceryIcon from "@/assets/images/icons/icon_illustrative_grocery.svg";
+import HealthIcon from "@/assets/images/icons/icon_illustrative_health.svg";
+import TransportIcon from "@/assets/images/icons/icon_illustrative_transport.svg";
+import FunIcon from "@/assets/images/icons/icon_illustrative_fun.svg";
+import { Link } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
 const { width } = Dimensions.get("window");
 
-const mockTransactions = [
+export const mockTransactions = [
   {
     id: "1",
     name: "Freelance Income",
     category: "Freelance",
     date: "Today",
+    dateGroup: "TODAY",
     amount: 850000,
     type: "income" as const,
     iconComponent: <FreelanceIcon width={57} height={57} />,
@@ -38,25 +44,78 @@ const mockTransactions = [
     id: "2",
     name: "Lunch at Kigali",
     category: "Meals",
-    date: "Yesterday",
+    date: "Today",
+    dateGroup: "TODAY",
     amount: 8500,
     type: "expense" as const,
     iconComponent: <MealIcon width={57} height={57} />,
   },
   {
     id: "3",
+    name: "Grocery for Lunar Year",
+    category: "Grocery",
+    date: "Today",
+    dateGroup: "TODAY",
+    amount: 35000,
+    type: "expense" as const,
+    iconComponent: <GroceryIcon width={57} height={57} />,
+  },
+  {
+    id: "4",
+    name: "Gym Membership",
+    category: "Health",
+    date: "Yesterday",
+    dateGroup: "YESTERDAY",
+    amount: 20000,
+    type: "expense" as const,
+    iconComponent: <HealthIcon width={57} height={57} />,
+  },
+  {
+    id: "5",
+    name: "Freelance Design Project",
+    category: "Freelance",
+    date: "Yesterday",
+    dateGroup: "YESTERDAY",
+    amount: 135000,
+    type: "income" as const,
+    iconComponent: <FreelanceIcon width={57} height={57} />,
+  },
+  {
+    id: "6",
+    name: "Coffee & Mile tea",
+    category: "Meals",
+    date: "Yesterday",
+    dateGroup: "YESTERDAY",
+    amount: 2500,
+    type: "expense" as const,
+    iconComponent: <MealIcon width={57} height={57} />,
+  },
+  {
+    id: "7",
+    name: "Ride share with Mike",
+    category: "Transport",
+    date: "Yesterday",
+    dateGroup: "YESTERDAY",
+    amount: 2500,
+    type: "expense" as const,
+    iconComponent: <TransportIcon width={57} height={57} />,
+  },
+  {
+    id: "8",
     name: "Monthly Salary",
     category: "Salary",
     date: "Jan 30, 2022",
+    dateGroup: "JAN 30, 2022",
     amount: 1406000,
     type: "income" as const,
     iconComponent: <SalaryIcon width={57} height={57} />,
   },
   {
-    id: "4",
+    id: "9",
     name: "Shopping at Simba Supermarket",
     category: "Shopping",
     date: "Jan 16, 2022",
+    dateGroup: "JAN 16, 2022",
     amount: 119900,
     type: "expense" as const,
     iconComponent: <ShoppingIcon width={57} height={57} />,
@@ -120,9 +179,11 @@ export default function HomeScreen() {
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Transactions History</Text>
-          <TouchableOpacity>
-            <Text style={styles.seeAllButton}>See all</Text>
-          </TouchableOpacity>
+          <Link href="/transactions" asChild>
+            <TouchableOpacity>
+              <Text style={styles.seeAllButton}>See all</Text>
+            </TouchableOpacity>
+          </Link>
         </View>
 
         <View style={styles.transactionsContainer}>
