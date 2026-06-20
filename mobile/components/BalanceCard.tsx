@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -32,13 +32,23 @@ export default function BalanceCard({
   expenses,
 }: BalanceCardProps) {
   const colorScheme = useColorScheme();
+  const [showBalance, setShowBalance] = useState(true);
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.headerText}>Total Balance</Text>
-          <FontAwesome name="angle-up" size={16} color="white" />
+          <TouchableOpacity
+            onPress={() => setShowBalance(!showBalance)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <FontAwesome
+              name={showBalance ? "eye" : "eye-slash"}
+              size={16}
+              color="white"
+            />
+          </TouchableOpacity>
         </View>
         <View style={styles.headerRight}>
           <TouchableOpacity style={styles.moreButton}>
@@ -52,7 +62,7 @@ export default function BalanceCard({
         adjustsFontSizeToFit
         minimumFontScale={0.8}
       >
-        {formatRWF(totalBalance)}
+        {showBalance ? formatRWF(totalBalance) : "********"}
       </Text>
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
@@ -67,7 +77,7 @@ export default function BalanceCard({
               adjustsFontSizeToFit
               minimumFontScale={0.8}
             >
-              {formatRWF(income)}
+              {showBalance ? formatRWF(income) : "********"}
             </Text>
           </View>
         </View>
@@ -83,7 +93,7 @@ export default function BalanceCard({
               adjustsFontSizeToFit
               minimumFontScale={0.8}
             >
-              {formatRWF(expenses)}
+              {showBalance ? formatRWF(expenses) : "********"}
             </Text>
           </View>
         </View>
