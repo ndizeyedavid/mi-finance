@@ -12,6 +12,7 @@ import FunIcon from "@/assets/images/icons/icon_illustrative_fun.svg";
 import HealthIcon from "@/assets/images/icons/icon_illustrative_health.svg";
 import GroceryIcon from "@/assets/images/icons/icon_illustrative_grocery.svg";
 import TransportIcon from "@/assets/images/icons/icon_illustrative_transport.svg";
+import { Link } from "expo-router";
 
 // Icon map based on goal categories
 const iconMap = {
@@ -57,111 +58,121 @@ export default function GoalCard({ goal, onPress }: GoalCardProps) {
   const progressPercent = Math.round(progress * 100);
 
   return (
-    <TouchableOpacity
+    <Link
+      // @ts-ignore
+      href={`/goals/${goal.id}`}
       style={[styles.card, goal.completed && styles.completedCard]}
-      onPress={onPress}
-      activeOpacity={0.8}
+      asChild
     >
-      <View style={styles.content}>
-        <View style={styles.headerRow}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <View style={styles.iconContainer}>{iconMap[goal.category]}</View>
-            <View style={styles.titleContainer}>
-              <Text
-                style={[styles.title, goal.completed && styles.completedText]}
-              >
-                {goal.title}
-              </Text>
-              {goal.description && (
+      <TouchableOpacity
+        // onPress={onPress}
+        activeOpacity={0.8}
+      >
+        <View style={styles.content}>
+          <View style={styles.headerRow}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={styles.iconContainer}>{iconMap[goal.category]}</View>
+              <View style={styles.titleContainer}>
+                <Text
+                  style={[styles.title, goal.completed && styles.completedText]}
+                >
+                  {goal.title}
+                </Text>
+                {goal.description && (
+                  <Text
+                    style={[
+                      styles.description,
+                      goal.completed && styles.completedText,
+                    ]}
+                  >
+                    {goal.description}
+                  </Text>
+                )}
+              </View>
+            </View>
+            <FontAwesome name="chevron-right" size={16} color="#ccc" />
+          </View>
+        </View>
+
+        <View style={{ width: "100%" }}>
+          <View style={styles.progressRow}>
+            {goal.deadline && (
+              <View style={styles.deadlineContainer}>
+                <FontAwesome
+                  name="clock-o"
+                  size={14}
+                  color="#888"
+                  style={styles.deadlineIcon}
+                />
                 <Text
                   style={[
-                    styles.description,
+                    styles.deadline,
                     goal.completed && styles.completedText,
                   ]}
                 >
-                  {goal.description}
+                  {goal.deadline}
                 </Text>
-              )}
-            </View>
-          </View>
-          <FontAwesome name="chevron-right" size={16} color="#ccc" />
-        </View>
-      </View>
-
-      <View style={{ width: "100%" }}>
-        <View style={styles.progressRow}>
-          {goal.deadline && (
-            <View style={styles.deadlineContainer}>
-              <FontAwesome
-                name="clock-o"
-                size={14}
-                color="#888"
-                style={styles.deadlineIcon}
-              />
+              </View>
+            )}
+            <View style={styles.percentContainer}>
               <Text
                 style={[
-                  styles.deadline,
-                  goal.completed && styles.completedText,
+                  styles.percentText,
+                  { color: goal.completed ? "#888" : Colors.light.tint },
                 ]}
               >
-                {goal.deadline}
+                {progressPercent}%
               </Text>
             </View>
-          )}
-          <View style={styles.percentContainer}>
+          </View>
+
+          <View style={styles.progressContainer}>
+            <View style={styles.progressBar}>
+              <View
+                style={[
+                  styles.progressFill,
+                  {
+                    width: `${progressPercent}%`,
+                    backgroundColor: goal.completed
+                      ? "#888"
+                      : Colors.light.tint,
+                  },
+                ]}
+              />
+              <View
+                style={[
+                  styles.progressDot,
+                  {
+                    transform: [
+                      { translateX: progress * 100 + progress * 180 },
+                    ],
+                  },
+                ]}
+              />
+            </View>
+          </View>
+
+          <View style={styles.amountRow}>
             <Text
               style={[
-                styles.percentText,
-                { color: goal.completed ? "#888" : Colors.light.tint },
+                styles.currentAmount,
+                goal.completed && styles.completedText,
               ]}
             >
-              {progressPercent}%
+              {formatRWF(goal.currentAmount)}
+            </Text>
+            <Text
+              style={[
+                styles.targetAmount,
+                goal.completed && styles.completedText,
+              ]}
+            >
+              {formatRWF(goal.targetAmount)}
             </Text>
           </View>
         </View>
-
-        <View style={styles.progressContainer}>
-          <View style={styles.progressBar}>
-            <View
-              style={[
-                styles.progressFill,
-                {
-                  width: `${progressPercent}%`,
-                  backgroundColor: goal.completed ? "#888" : Colors.light.tint,
-                },
-              ]}
-            />
-            <View
-              style={[
-                styles.progressDot,
-                {
-                  transform: [{ translateX: progress * 100 + progress * 180 }],
-                },
-              ]}
-            />
-          </View>
-        </View>
-
-        <View style={styles.amountRow}>
-          <Text
-            style={[
-              styles.currentAmount,
-              goal.completed && styles.completedText,
-            ]}
-          >
-            {formatRWF(goal.currentAmount)}
-          </Text>
-          <Text
-            style={[
-              styles.targetAmount,
-              goal.completed && styles.completedText,
-            ]}
-          >
-            {formatRWF(goal.targetAmount)}
-          </Text>
-        </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </Link>
   );
 }
 
@@ -238,6 +249,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.light.tint,
   },
   percentText: {
     fontSize: 14,
