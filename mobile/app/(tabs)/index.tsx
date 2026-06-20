@@ -20,6 +20,7 @@ import FreelanceIcon from "@/assets/images/icons/icon_illustrative_freelance.svg
 import SalaryIcon from "@/assets/images/icons/icon_illustrative_salary.svg";
 import ShoppingIcon from "@/assets/images/icons/icon_illustrative_shopping.svg";
 import MealIcon from "@/assets/images/icons/icon_illustrative_meal.svg";
+import { StatusBar } from "expo-status-bar";
 
 const { width } = Dimensions.get("window");
 
@@ -139,6 +140,7 @@ export default function HomeScreen() {
         onDateSelect={handleDateSelect}
         onDateRangeSelect={handleDateRangeSelect}
       />
+      <StatusBar style="inverted" />
     </CustomSafeAreaView>
   );
 }
