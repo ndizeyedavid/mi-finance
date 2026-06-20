@@ -24,11 +24,7 @@ import VacationIcon from "@/assets/images/icons/icon_illustrative_vacation.svg";
 import MealIcon from "@/assets/images/icons/icon_illustrative_meal.svg";
 import GroceryIcon from "@/assets/images/icons/icon_illustrative_grocery.svg";
 import HealthIcon from "@/assets/images/icons/icon_illustrative_health.svg";
-import InvestmentIcon from "@/assets/images/icons/icon_illustrative_investment.svg";
-import RentIcon from "@/assets/images/icons/icon_illustrative_rent.svg";
-import SalaryIcon from "@/assets/images/icons/icon_illustrative_salary.svg";
-import FreelanceIcon from "@/assets/images/icons/icon_illustrative_freelance.svg";
-import PassiveIncomeIcon from "@/assets/images/icons/icon_illustrative_passiveincome.svg";
+import TransportIcon from "@/assets/images/icons/icon_illustrative_transport.svg";
 import ShoppingIcon from "@/assets/images/icons/icon_illustrative_shopping.svg";
 import FunIcon from "@/assets/images/icons/icon_illustrative_fun.svg";
 
@@ -42,11 +38,7 @@ type Category =
   | "meal"
   | "grocery"
   | "health"
-  | "investment"
-  | "rent"
-  | "salary"
-  | "freelance"
-  | "passiveincome"
+  | "transport"
   | "shopping"
   | "fun";
 
@@ -58,10 +50,9 @@ const categories = [
   { id: "meal", label: "Snacks", icon: MealIcon },
   { id: "grocery", label: "Grocery", icon: GroceryIcon },
   { id: "health", label: "Health", icon: HealthIcon },
-  { id: "investment", label: "Investment", icon: InvestmentIcon },
-  { id: "rent", label: "Rent", icon: RentIcon },
-  { id: "shopping", label: "Shopping", icon: ShoppingIcon },
+  { id: "transport", label: "Transport", icon: TransportIcon },
   { id: "fun", label: "Fun", icon: FunIcon },
+  { id: "shopping", label: "Shopping", icon: ShoppingIcon },
 ];
 
 function formatRWFInput(text: string): string {
