@@ -20,7 +20,7 @@ import { useColorScheme } from "@/components/useColorScheme";
 const tabs = [
   { name: "index", label: "Home", icon: "home", width: 120 },
   { name: "stats", label: "Stats", icon: "bar-chart", width: 120 },
-  { name: "wallet", label: "Wallet", icon: "credit-card", width: 130 },
+  { name: "goals", label: "Goals", icon: "bullseye", width: 120 },
   { name: "profile", label: "Profile", icon: "user", width: 135 },
 ];
 
@@ -146,7 +146,7 @@ export default function TabLayout() {
     >
       <Tabs.Screen name="index" options={{ title: "Home" }} />
       <Tabs.Screen name="stats" options={{ title: "Stats" }} />
-      <Tabs.Screen name="wallet" options={{ title: "Wallet" }} />
+      <Tabs.Screen name="goals" options={{ title: "Goals" }} />
       <Tabs.Screen name="profile" options={{ title: "Profile" }} />
     </Tabs>
   );

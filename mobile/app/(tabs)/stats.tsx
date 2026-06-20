@@ -242,6 +242,9 @@ export default function StatsScreen() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   blurContainer: {
     position: "absolute",
     top: 0,
