@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { SvgXml } from "react-native-svg";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "./useColorScheme";
 
@@ -17,8 +18,9 @@ interface TransactionItemProps {
   date: string;
   amount: number;
   type: "income" | "expense";
-  iconUrl?: string;
-  icon?: React.ReactNode;
+  category: string;
+  iconSvg?: string;
+  iconComponent?: React.ReactNode;
 }
 
 export default function TransactionItem({
@@ -26,34 +28,31 @@ export default function TransactionItem({
   date,
   amount,
   type,
-  iconUrl,
-  icon,
+  category,
+  iconComponent,
 }: TransactionItemProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
 
   return (
     <View style={styles.container}>
-      <View style={styles.iconContainer}>
-        {iconUrl ? (
-          <Image source={{ uri: iconUrl }} style={styles.iconImage} />
-        ) : (
-          icon
-        )}
-      </View>
+      <View style={styles.iconContainer}>{iconComponent}</View>
       <View style={styles.details}>
-        <Text style={styles.name}>{name}</Text>
+        <Text style={styles.name}>{category}</Text>
+        <Text style={styles.category}>{name}</Text>
+      </View>
+      <View style={styles.amountContainer}>
+        <Text
+          style={[
+            styles.amount,
+            { color: type === "income" ? colors.success : colors.danger },
+          ]}
+        >
+          {type === "income" ? "+" : "-"}
+          {formatRWF(amount)}
+        </Text>
         <Text style={styles.date}>{date}</Text>
       </View>
-      <Text
-        style={[
-          styles.amount,
-          { color: type === "income" ? colors.success : colors.danger },
-        ]}
-      >
-        {type === "income" ? "+" : "-"}
-        {formatRWF(amount)}
-      </Text>
     </View>
   );
 }
@@ -62,13 +61,15 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: 16,
   },
   iconContainer: {
     width: 56,
     height: 56,
     borderRadius: 16,
     backgroundColor: "#f5f5f5",
+    borderWidth: 1,
+    borderColor: "#e5e5e5",
     justifyContent: "center",
     alignItems: "center",
     marginRight: 16,
@@ -77,11 +78,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-  },
-  iconImage: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
   },
   details: {
     flex: 1,
@@ -92,13 +88,20 @@ const styles = StyleSheet.create({
     color: "#000",
     marginBottom: 4,
   },
-  date: {
-    fontSize: 14,
+  category: {
+    fontSize: 13,
     color: "#888",
   },
+  amountContainer: {
+    alignItems: "flex-end",
+  },
   amount: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "700",
-    color: "#fff",
+    marginBottom: 2,
+  },
+  date: {
+    fontSize: 12,
+    color: "#888",
   },
 });

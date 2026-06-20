@@ -14,45 +14,49 @@ import BalanceCard from "@/components/BalanceCard";
 import TransactionItem from "@/components/TransactionItem";
 import SendAgainAvatar from "@/components/SendAgainAvatar";
 import CustomSafeAreaView from "@/components/CustomSafeAreaView";
+import FreelanceIcon from "@/assets/images/icons/icon_illustrative_freelance.svg";
+import SalaryIcon from "@/assets/images/icons/icon_illustrative_salary.svg";
+import ShoppingIcon from "@/assets/images/icons/icon_illustrative_shopping.svg";
+import MealIcon from "@/assets/images/icons/icon_illustrative_meal.svg";
 
 const { width } = Dimensions.get("window");
 
 const mockTransactions = [
   {
     id: "1",
-    name: "Upwork",
+    name: "Freelance Income",
+    category: "Freelance",
     date: "Today",
     amount: 850000,
     type: "income" as const,
-    iconUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Upwork_logo.svg/1200px-Upwork_logo.svg.png",
+    iconComponent: <FreelanceIcon width={57} height={57} />,
   },
   {
     id: "2",
-    name: "Transfer",
+    name: "Lunch at Kigali",
+    category: "Meals",
     date: "Yesterday",
-    amount: 85000,
+    amount: 8500,
     type: "expense" as const,
-    iconUrl:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
+    iconComponent: <MealIcon width={57} height={57} />,
   },
   {
     id: "3",
-    name: "Paypal",
+    name: "Monthly Salary",
+    category: "Salary",
     date: "Jan 30, 2022",
     amount: 1406000,
     type: "income" as const,
-    iconUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/1000px-PayPal.svg.png",
+    iconComponent: <SalaryIcon width={57} height={57} />,
   },
   {
     id: "4",
-    name: "Youtube",
+    name: "Shopping at Simba Supermarket",
+    category: "Shopping",
     date: "Jan 16, 2022",
-    amount: 11990,
+    amount: 119900,
     type: "expense" as const,
-    iconUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/800px-YouTube_full-color_icon_%282017%29.svg.png",
+    iconComponent: <ShoppingIcon width={57} height={57} />,
   },
 ];
 
@@ -92,6 +96,7 @@ export default function HomeScreen() {
             fill={Colors.light.tint}
           />
         </Svg>
+
         <BalanceCard
           totalBalance={2548000}
           income={1840000}
