@@ -1,7 +1,13 @@
 import React from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { View, StyleSheet, TouchableOpacity, Platform } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  Platform,
+} from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -10,163 +16,100 @@ import Animated, {
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
 
-// SVG-like custom icons as Reanimated components
-function HomeIcon({
-  color,
-  size,
-  focused,
-}: {
-  color: string;
-  size: number;
-  focused: boolean;
-}) {
-  const scale = useSharedValue(focused ? 1.2 : 1);
-  React.useEffect(() => {
-    scale.value = withSpring(focused ? 1.15 : 1, {
-      damping: 15,
-      stiffness: 200,
-    });
-  }, [focused]);
+// Tab data
+const tabs = [
+  { name: "index", label: "Home", icon: "home", width: 120 },
+  { name: "stats", label: "Stats", icon: "bar-chart", width: 120 },
+  { name: "wallet", label: "Wallet", icon: "credit-card", width: 130 },
+  { name: "profile", label: "Profile", icon: "user", width: 135 },
+];
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+function TabButton({
+  route,
+  isFocused,
+  onPress,
+}: {
+  route: (typeof tabs)[0];
+  isFocused: boolean;
+  onPress: () => void;
+}) {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? "light"];
+
+  // Animated values
+  const pillWidth = useSharedValue(isFocused ? route.width : 56);
+  const pillOpacity = useSharedValue(isFocused ? 1 : 0);
+  const textOpacity = useSharedValue(isFocused ? 1 : 0);
+
+  React.useEffect(() => {
+    pillWidth.value = withSpring(isFocused ? route.width : 56, {
+      damping: 38,
+      stiffness: 250,
+    });
+    pillOpacity.value = withSpring(isFocused ? 1 : 0, {
+      damping: 20,
+      stiffness: 250,
+    });
+    textOpacity.value = withSpring(isFocused ? 1 : 0, {
+      damping: 20,
+      stiffness: 250,
+    });
+  }, [isFocused, route.width]);
+
+  // Animated styles
+  const pillAnimatedStyle = useAnimatedStyle(() => ({
+    width: pillWidth.value,
+    opacity: pillOpacity.value,
+  }));
+
+  const textAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: textOpacity.value,
+    transform: [{ translateX: isFocused ? 0 : -20 }],
   }));
 
   return (
-    <Animated.View style={[styles.iconContainer, animatedStyle]}>
-      <FontAwesome name="home" size={size} color={color} />
-    </Animated.View>
-  );
-}
+    <TouchableOpacity
+      style={styles.tabButton}
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
+      <Animated.View
+        style={[
+          styles.pill,
+          pillAnimatedStyle,
+          { backgroundColor: colors.tint },
+        ]}
+      >
+        <View style={styles.iconContainer}>
+          <FontAwesome name={route.icon as any} size={22} color="white" />
+        </View>
+        <Animated.Text style={[styles.tabText, textAnimatedStyle]}>
+          {route.label}
+        </Animated.Text>
+      </Animated.View>
 
-function StatsIcon({
-  color,
-  size,
-  focused,
-}: {
-  color: string;
-  size: number;
-  focused: boolean;
-}) {
-  const scale = useSharedValue(focused ? 1.2 : 1);
-  React.useEffect(() => {
-    scale.value = withSpring(focused ? 1.15 : 1, {
-      damping: 15,
-      stiffness: 200,
-    });
-  }, [focused]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  return (
-    <Animated.View style={[styles.iconContainer, animatedStyle]}>
-      <View style={styles.statsIconContainer}>
-        <View
-          style={[
-            styles.statsBar,
-            { height: size * 0.4, backgroundColor: color },
-          ]}
-        />
-        <View
-          style={[
-            styles.statsBar,
-            { height: size * 0.6, backgroundColor: color },
-          ]}
-        />
-        <View
-          style={[
-            styles.statsBar,
-            { height: size * 0.9, backgroundColor: color },
-          ]}
-        />
-        <View
-          style={[
-            styles.statsBar,
-            { height: size * 0.6, backgroundColor: color },
-          ]}
-        />
-      </View>
-    </Animated.View>
-  );
-}
-
-function WalletIcon({
-  color,
-  size,
-  focused,
-}: {
-  color: string;
-  size: number;
-  focused: boolean;
-}) {
-  const scale = useSharedValue(focused ? 1.2 : 1);
-  React.useEffect(() => {
-    scale.value = withSpring(focused ? 1.15 : 1, {
-      damping: 15,
-      stiffness: 200,
-    });
-  }, [focused]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  return (
-    <Animated.View style={[styles.iconContainer, animatedStyle]}>
-      <FontAwesome name="credit-card" size={size} color={color} />
-    </Animated.View>
-  );
-}
-
-function ProfileIcon({
-  color,
-  size,
-  focused,
-}: {
-  color: string;
-  size: number;
-  focused: boolean;
-}) {
-  const scale = useSharedValue(focused ? 1.2 : 1);
-  React.useEffect(() => {
-    scale.value = withSpring(focused ? 1.15 : 1, {
-      damping: 15,
-      stiffness: 200,
-    });
-  }, [focused]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  return (
-    <Animated.View style={[styles.iconContainer, animatedStyle]}>
-      <FontAwesome name="user-circle-o" size={size} color={color} />
-    </Animated.View>
+      {/* Inactive icon */}
+      {!isFocused && (
+        <View style={styles.inactiveIconContainer}>
+          <FontAwesome
+            name={route.icon as any}
+            size={24}
+            color="rgba(150, 150, 150, 0.7)"
+          />
+        </View>
+      )}
+    </TouchableOpacity>
   );
 }
 
 function CustomTabBar({ state, descriptors, navigation }) {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? "light"];
-  const activeColor = colors.tint;
-  const inactiveColor = "rgba(150, 150, 150, 0.6)";
-
-  const tabIcons = [
-    HomeIcon,
-    StatsIcon,
-    null, // FAB placeholder
-    WalletIcon,
-    ProfileIcon,
-  ];
-
   return (
     <View style={styles.tabBarContainer}>
       <View style={styles.tabBar}>
         {state.routes.map((route, index) => {
-          const IconComponent = tabIcons[index];
+          const tab = tabs[index];
+          if (!tab) return null;
+
           const isFocused = state.index === index;
 
           const onPress = () => {
@@ -181,41 +124,16 @@ function CustomTabBar({ state, descriptors, navigation }) {
             }
           };
 
-          const onLongPress = () => {
-            navigation.emit({
-              type: "tabLongPress",
-              target: route.key,
-            });
-          };
-
-          if (IconComponent === null) {
-            return <View key={route.key} style={styles.fabPlaceholder} />;
-          }
-
           return (
-            <TouchableOpacity
+            <TabButton
               key={route.key}
-              accessibilityRole="button"
-              accessibilityState={isFocused ? { selected: true } : {}}
+              route={tab}
+              isFocused={isFocused}
               onPress={onPress}
-              onLongPress={onLongPress}
-              style={styles.tabItem}
-              activeOpacity={0.8}
-            >
-              <IconComponent
-                color={isFocused ? activeColor : inactiveColor}
-                size={24}
-                focused={isFocused}
-              />
-            </TouchableOpacity>
+            />
           );
         })}
       </View>
-      <TouchableOpacity style={styles.fab} activeOpacity={0.9}>
-        <View style={styles.fabInner}>
-          <FontAwesome name="plus" size={28} color="white" />
-        </View>
-      </TouchableOpacity>
     </View>
   );
 }
@@ -240,58 +158,52 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
     backgroundColor: "#ffffff",
     paddingTop: Platform.OS === "ios" ? 18 : 14,
     paddingBottom: Platform.OS === "ios" ? 34 : 24,
-    paddingHorizontal: 24,
-    shadowColor: Colors.light.tint,
+    paddingHorizontal: 16,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.08,
     shadowRadius: 16,
     elevation: 8,
     borderTopWidth: 0,
   },
-  tabItem: {
-    flex: 1,
-    alignItems: "center",
+  tabButton: {
+    height: 56,
     justifyContent: "center",
+    alignItems: "center",
+  },
+  pill: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: 56,
+    borderRadius: 28,
+    paddingHorizontal: 18,
+    shadowColor: Colors.light.tint,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 6,
   },
   iconContainer: {
-    width: 48,
-    height: 48,
+    width: 32,
+    height: 32,
     justifyContent: "center",
     alignItems: "center",
   },
-  statsIconContainer: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    gap: 4,
+  tabText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
+    marginLeft: 8,
   },
-  statsBar: {
-    width: 4,
-    borderRadius: 3,
-  },
-  fabPlaceholder: {
-    width: 72,
-  },
-  fab: {
+  inactiveIconContainer: {
     position: "absolute",
-    alignSelf: "center",
-    bottom: Platform.OS === "ios" ? 38 : 28,
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    shadowColor: Colors.light.tint,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 24,
-    elevation: 12,
-  },
-  fabInner: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 32,
-    backgroundColor: Colors.light.tint,
+    width: 56,
+    height: 56,
     justifyContent: "center",
     alignItems: "center",
   },
